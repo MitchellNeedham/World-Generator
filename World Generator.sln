@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "World Generator", "World Generator\World Generator.pyproj", "{5B58BF7F-9F51-4E9C-A6FA-1CB6CE450AF5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5B58BF7F-9F51-4E9C-A6FA-1CB6CE450AF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B58BF7F-9F51-4E9C-A6FA-1CB6CE450AF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F84B5ACA-FE24-46A6-895E-09D20A727790}
+	EndGlobalSection
+EndGlobal
