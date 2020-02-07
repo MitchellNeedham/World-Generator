@@ -93,7 +93,7 @@ while mainloop:
 
     elif game and update_tiles_counter >= 2:
         screen.fill(COLOR_BLACK)
-        game_world.is_over_tile(mouse_pos_cur)
+        print(game_world.is_over_tile(mouse_pos_cur))
 
         for tile in game_world.get_tile_list():
             game_tile.display(tile)

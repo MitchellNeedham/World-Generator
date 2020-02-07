@@ -468,6 +468,8 @@ class world(object):
             else:
                 is_over_coord = coordinates[1]
 
+        #print(is_over_coord, coordinates)
+
         return is_over_coord
 
         
@@ -525,7 +527,7 @@ class world(object):
 
             for i in range(-line_count, 0):
 
-                intercept = bottom_left_tile.coords[3][1] + side_length + side_length * i - bottom_left_tile.x * gradient
+                intercept = start_tile.y + (start_tile.height - start_tile.side_point) * self.map_size[1] + side_length + side_length * i - bottom_left_tile.x * gradient
 
                 
                 if pos[1] < gradient * pos[0] + intercept:
@@ -560,6 +562,8 @@ class game_tile(object):
         self.world = world
         self.coords = []
 
+        self.side_point = 0
+
         
 
 
@@ -579,14 +583,14 @@ class game_tile(object):
 
         if self.shape == 1:
             
-            side_point = self.width / (2 * math.tan(60 * math.pi / 180))
+            self.side_point = self.width / (2 * math.tan(60 * math.pi / 180))
 
             coord_top = (self.x + self.width / 2, self.y)
             coord_bottom = (self.x + self.width / 2, self. y + self.height)
-            coord_top_left = (self.x, self.y + side_point)
-            coord_bottom_left = (self.x, self.y + self.height - side_point)
-            coord_top_right = (self.x + self.width, self.y + side_point)
-            coord_bottom_right = (self.x + self.width, self.y + self.height - side_point)
+            coord_top_left = (self.x, self.y + self.side_point)
+            coord_bottom_left = (self.x, self.y + self.height - self.side_point)
+            coord_top_right = (self.x + self.width, self.y + self.side_point)
+            coord_bottom_right = (self.x + self.width, self.y + self.height - self.side_point)
 
             self.coords = [coord_top, coord_bottom, coord_top_left, coord_bottom_left, coord_top_right, coord_bottom_right]
 
