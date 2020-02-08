@@ -26,6 +26,9 @@
     <Compile Include="menu.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="sidemenu.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="world.py">
       <SubType>Code</SubType>
     </Compile>

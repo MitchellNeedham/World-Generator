@@ -50,7 +50,7 @@ MAX_ZOOM = 40
 MIN_ZOOM = 0
 ZOOM_INCREMENT = 1.1
 
-START_POSITIONS = (10, 5)
+START_POSITIONS = (200, 150)
 
 tile_types = {
     'shallow water':            (SHALLOW_WATER,             -20,    0,   0, 100,   0, 100),
@@ -82,10 +82,10 @@ tile_types = {
 						
     'snow hills':               (SNOW_HILLS,                20, 50, 0, 30, 0, 100),
     'snow plains':              (SNOW_PLAINS,               0, 30, 0, 30, 0, 100),
-    'taiga':                    (TAIGA,                     10, 60, 0, 40, 0, 100),
-    'alpine':                   (ALPINE,                    40, 80, 0, 60, 0, 100),
-    'low snow mountain':        (LOW_SNOW_MOUNTAIN,         60, 80, 0, 60, 0, 100),
-    'snow mountain':            (SNOW_MOUNTAIN,             80, 100, 0, 80, 0, 100)}
+    'taiga':                    (TAIGA,                     30, 60, 0, 30, 0, 100),
+    'alpine':                   (ALPINE,                    40, 80, 0, 30, 0, 100),
+    'low snow mountain':        (LOW_SNOW_MOUNTAIN,         60, 80, 0, 40, 0, 100),
+    'snow mountain':            (SNOW_MOUNTAIN,             80, 100, 0, 50, 0, 100)}
 
 
 AVG_ALT = 50
@@ -132,9 +132,9 @@ class world(object):
                 
 
                 if j % 2 == 0:
-                    self.tile_list.append(game_tile(self.screen, tile_width * i, tile_vert_spacing * j, tile_types[key][0], tile_width, tile_height, tile_shape, (i, j), key, self))
+                    self.tile_list.append(game_tile(self.screen, tile_width * i, tile_vert_spacing * j, tile_types[key][0], tile_width, tile_height, tile_shape, (i, j), key, self, alt, temp, humidity))
                 else:
-                    self.tile_list.append(game_tile(self.screen, tile_width * i + tile_width / 2, tile_vert_spacing * j, tile_types[key][0], tile_width, tile_height, tile_shape, (i, j), key, self))
+                    self.tile_list.append(game_tile(self.screen, tile_width * i + tile_width / 2, tile_vert_spacing * j, tile_types[key][0], tile_width, tile_height, tile_shape, (i, j), key, self, alt, temp, humidity))
 
     def get_tile_list(self):
         return self.tile_list
@@ -301,10 +301,8 @@ class world(object):
     def get_temp(self, coord, start):
         nearby_temps = []
         longitude = math.sqrt(math.pow(int(self.map_size[1]/2) - coord[1], 2))
-        relative_pos_temp = (100 - longitude / int(self.map_size[1]/2) * 100)/2
+        relative_pos_temp = (100 - longitude / int(self.map_size[1]/2) * 100)
 
-        if relative_pos_temp > 20:
-            relative_pos_temp -= 20
 
         if start:
             return relative_pos_temp
@@ -314,13 +312,16 @@ class world(object):
             if self.attr_list[nearby[0]][nearby[1]] != (None, None, None):
                 nearby_temps.append(self.attr_list[nearby[0]][nearby[1]][1])
 
-        new_temp = (sum(nearby_temps) + relative_pos_temp * 2) / (len(nearby_temps))
-        if new_temp > 80:
-            new_temp += randint(-35, 10)
-        elif new_temp > 60:
-            new_temp += randint(-25, 15)
-        elif new_temp <= 60:
-            new_temp += randint(-20, 20)
+        new_temp = ((sum(nearby_temps) / len(nearby_temps)  + relative_pos_temp * 1) / 2)
+
+        new_temp += randint(-2, 2)
+
+        #if new_temp > 80:
+        #    new_temp += randint(-15, 10)
+        #elif new_temp > 60:
+        #    new_temp += randint(-15, 15)
+        #elif new_temp <= 60:
+        #    new_temp += randint(-15, 15)
 
         if new_temp > 100:
             new_temp = 100
@@ -369,6 +370,7 @@ class world(object):
         right_diag = self.line_check(pos, 2)
         #print(vert_line, left_diag, right_diag)
         is_over_coord = (0, 0)
+        pos_in_list = 0
 
         possible_columns = []
         possible_tiles_left = []
@@ -470,7 +472,10 @@ class world(object):
 
         #print(is_over_coord, coordinates)
 
-        return is_over_coord
+        
+
+
+        return is_over_coord[0] * self.map_size[1] + is_over_coord[1]
 
         
        
@@ -534,6 +539,23 @@ class world(object):
                     if -i >= line_count:
                         return None
                     return -i - 1
+
+
+    def hightlight(self, pos):
+        if pos or pos == 0:
+            if pos >= 0 or pos < self.map_size[0] * self.map_size[1]:
+                tile = self.tile_list[pos]
+                color = tile_types[tile.key][0]
+                tile.color = (255 - int((255 - color[0]) / 1.5), 255 - int((255 - color[1]) / 1.5), 255 - int((255 - color[2]) / 1.5))
+                return pos
+        return None
+
+    def unhightlight(self, pos):
+        if pos or pos == 0:
+            if pos >= 0 or pos < self.map_size[0] * self.map_size[1]:
+                tile = self.tile_list[pos]
+                color = tile_types[tile.key][0]
+                tile.color = color
                 
 
 
@@ -549,7 +571,7 @@ class world(object):
 
 
 class game_tile(object):
-    def __init__(self, screen, x, y, color, width, height, shape, pos, key, world):
+    def __init__(self, screen, x, y, color, width, height, shape, pos, key, world, alt, temp, humidity):
         self.screen = screen
         self.x = x
         self.y = y
@@ -560,9 +582,15 @@ class game_tile(object):
         self.pos = pos
         self.key = key
         self.world = world
+        self.alt = alt
+        self.temp = temp
+        self.humidity = humidity
+
         self.coords = []
 
         self.side_point = 0
+
+        #self.color = (int(255 * self.temp / 100), int(255 * self.temp / 100), int(255 * self.temp / 100))
 
         
 
